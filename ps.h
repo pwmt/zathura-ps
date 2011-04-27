@@ -5,8 +5,7 @@
 
 #include <stdbool.h>
 #include <libspectre/spectre.h>
-
-#include "../../document.h"
+#include <zathura/document.h>
 
 typedef struct ps_document_s
 {

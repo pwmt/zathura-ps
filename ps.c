@@ -3,7 +3,6 @@
 #include <stdlib.h>
 
 #include "ps.h"
-#include "../../zathura.h"
 
 void
 plugin_register(zathura_document_plugin_t* plugin)
@@ -173,8 +172,6 @@ ps_page_render(zathura_page_t* page)
   }
 
   spectre_render_context_free(context);
-
-  ps_document_t* ps_document = (ps_document_t*) page->document->data;
 
   return image_buffer;
 }
