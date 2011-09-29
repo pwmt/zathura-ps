@@ -217,7 +217,7 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
   int rowstride            = cairo_image_surface_get_stride(surface);
   unsigned char* image     = cairo_image_surface_get_data(surface);
   unsigned int page_width  = cairo_image_surface_get_width(surface);
-  unsigned int page_height = cairo_image_surface_get_width(surface);
+  unsigned int page_height = cairo_image_surface_get_height(surface);
 
   for (unsigned int y = 0; y < page_height; y++) {
     for (unsigned int x = 0; x < page_width; x++) {
