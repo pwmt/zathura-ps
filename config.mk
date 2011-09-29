@@ -13,6 +13,9 @@ LIBS = -lc ${GTK_LIB} -lspectre
 # flags
 CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
 
+# cairo
+CFLAGS += -DHAVE_CAIRO
+
 # debug
 DFLAGS = -g
 

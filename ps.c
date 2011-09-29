@@ -21,6 +21,9 @@ ps_document_open(zathura_document_t* document)
   document->functions.document_free             = ps_document_free;
   document->functions.page_get                  = ps_page_get;
   document->functions.page_render               = ps_page_render;
+#if HAVE_CAIRO
+  document->functions.page_render_cairo         = ps_page_render_cairo;
+#endif
   document->functions.page_free                 = ps_page_free;
 
   document->data = malloc(sizeof(ps_document_t));
@@ -160,6 +163,12 @@ ps_page_render(zathura_page_t* page)
   unsigned char* page_data;
   int row_length;
   spectre_page_render(ps_page, context, &page_data, &row_length);
+  spectre_render_context_free(context);
+
+  if (page_data == NULL || spectre_page_status(ps_page)) {
+    g_free(page_data);
+    return NULL;
+  }
 
   for (unsigned int y = 0; y < page_height; y++) {
     for (unsigned int x = 0; x < page_width; x++) {
@@ -171,7 +180,56 @@ ps_page_render(zathura_page_t* page)
     }
   }
 
-  spectre_render_context_free(context);
+  g_free(page_data);
 
   return image_buffer;
+}
+
+bool
+ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
+{
+  if (page == NULL || page->data == NULL || cairo == NULL) {
+    return false;
+  }
+
+  SpectrePage* ps_page          = (SpectrePage*) page->data;
+  SpectreRenderContext* context = spectre_render_context_new();
+
+  spectre_render_context_set_scale(context, page->document->scale, page->document->scale);
+  spectre_render_context_set_rotation(context, 0);
+
+  unsigned char* page_data;
+  int row_length;
+  spectre_page_render(ps_page, context, &page_data, &row_length);
+  spectre_render_context_free(context);
+
+  if (page_data == NULL || spectre_page_status(ps_page)) {
+    g_free(page_data);
+    return false;
+  }
+
+  cairo_surface_t* surface = cairo_get_target(cairo);
+  if (surface == NULL) {
+    g_free(page_data);
+    return false;
+  }
+
+  int rowstride            = cairo_image_surface_get_stride(surface);
+  unsigned char* image     = cairo_image_surface_get_data(surface);
+  unsigned int page_width  = cairo_image_surface_get_width(surface);
+  unsigned int page_height = cairo_image_surface_get_width(surface);
+
+  for (unsigned int y = 0; y < page_height; y++) {
+    for (unsigned int x = 0; x < page_width; x++) {
+      unsigned char *s = page_data + y * row_length + x * 3;
+      guchar* p = image + y * rowstride + x * 3;
+      p[0] = s[0];
+      p[1] = s[1];
+      p[2] = s[2];
+    }
+  }
+
+  g_free(page_data);
+
+  return true;
 }
