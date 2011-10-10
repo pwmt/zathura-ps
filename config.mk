@@ -10,7 +10,10 @@ GTK_LIB ?= $(shell pkg-config --libs gtk+-2.0)
 SPECTRE_INC ?= $(shell pkg-config --cflags libspectre)
 SPECTRE_LIB ?= $(shell pkg-config --libs libspectre)
 
-INCS = ${GTK_INC} ${SPECTRE_INC}
+GIRARA_INC ?= $(shell pkg-config --cflags girara-gtk2)
+ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
+
+INCS = ${GTK_INC} ${SPECTRE_INC} ${ZATHURA_INC} ${GIRARA_INC}
 LIBS = ${GTK_LIB} ${SPECTRE_LIB}
 
 # flags
