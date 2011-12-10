@@ -229,7 +229,7 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
       p[0] = s[0];
       p[1] = s[1];
       p[2] = s[2];
-      p[3] = s[3]
+      p[3] = s[3];
     }
   }
 
