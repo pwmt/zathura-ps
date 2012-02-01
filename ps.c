@@ -9,6 +9,10 @@ void
 plugin_register(zathura_document_plugin_t* plugin)
 {
   girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/postscript"));
+  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/eps"));
+  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/x-eps"));
+  girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/eps"));
+  girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/x-eps"));
   plugin->open_function  = ps_document_open;
 }
 
