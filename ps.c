@@ -16,10 +16,12 @@ plugin_register(zathura_document_plugin_t* plugin)
   plugin->open_function  = ps_document_open;
 }
 
-bool
+zathura_plugin_error_t
 ps_document_open(zathura_document_t* document)
 {
-  if (!document) {
+  zathura_plugin_error_t error = ZATHURA_PLUGIN_ERROR_OK;
+
+  if (document == NULL) {
     goto error_ret;
   }
 
@@ -32,7 +34,8 @@ ps_document_open(zathura_document_t* document)
   document->functions.page_free                 = ps_page_free;
 
   document->data = malloc(sizeof(ps_document_t));
-  if (!document->data) {
+  if (document->data) {
+    error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
     goto error_ret;
   }
 
@@ -40,18 +43,20 @@ ps_document_open(zathura_document_t* document)
   ps_document->document      = spectre_document_new();
 
   if (ps_document->document == NULL) {
+    error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
     goto error_free;
   }
 
   spectre_document_load(ps_document->document, document->file_path);
 
   if (spectre_document_status(ps_document->document) != SPECTRE_STATUS_SUCCESS) {
+    error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
     goto error_free;
   }
 
   document->number_of_pages = spectre_document_get_n_pages(ps_document->document);
 
-  return true;
+  return error;
 
 error_free:
 
@@ -64,14 +69,14 @@ error_free:
 
 error_ret:
 
-  return false;
+  return error;
 }
 
-bool
+zathura_plugin_error_t
 ps_document_free(zathura_document_t* document)
 {
-  if (!document) {
-    return false;
+  if (document == NULL) {
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
   if (document->data != NULL) {
@@ -81,13 +86,16 @@ ps_document_free(zathura_document_t* document)
     document->data = NULL;
   }
 
-  return true;
+  return ZATHURA_PLUGIN_ERROR_OK;
 }
 
 zathura_page_t*
-ps_page_get(zathura_document_t* document, unsigned int page)
+ps_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_error_t* error)
 {
-  if (!document || !document->data) {
+  if (document == NULL || document->data == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+    }
     return NULL;
   }
 
@@ -95,12 +103,18 @@ ps_page_get(zathura_document_t* document, unsigned int page)
   zathura_page_t* document_page = malloc(sizeof(zathura_page_t));
 
   if (document_page == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
+    }
     goto error_ret;
   }
 
   SpectrePage* ps_page = spectre_document_get_page(ps_document->document, page);
 
   if (ps_page == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
     goto error_free;
   }
 
@@ -124,11 +138,11 @@ error_ret:
   return NULL;
 }
 
-bool
+zathura_plugin_error_t
 ps_page_free(zathura_page_t* page)
 {
   if (page == NULL) {
-    return false;
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
   if (page->data != NULL) {
@@ -138,13 +152,16 @@ ps_page_free(zathura_page_t* page)
 
   free(page);
 
-  return true;
+  return ZATHURA_PLUGIN_ERROR_OK;
 }
 
 zathura_image_buffer_t*
-ps_page_render(zathura_page_t* page)
+ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
 {
-  if (!page || !page->data || !page->document) {
+  if (page == NULL || page->data == NULL || page->document == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+    }
     return NULL;
   }
 
@@ -156,6 +173,9 @@ ps_page_render(zathura_page_t* page)
   zathura_image_buffer_t* image_buffer = zathura_image_buffer_create(page_width, page_height);
 
   if (image_buffer == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
+    }
     return NULL;
   }
 
@@ -171,6 +191,9 @@ ps_page_render(zathura_page_t* page)
   spectre_render_context_free(context);
 
   if (page_data == NULL || spectre_page_status(ps_page)) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
     g_free(page_data);
     return NULL;
   }
@@ -191,16 +214,16 @@ ps_page_render(zathura_page_t* page)
 }
 
 #if HAVE_CAIRO
-bool
+zathura_plugin_error_t
 ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(printing))
 {
   if (page == NULL || page->data == NULL || cairo == NULL) {
-    return false;
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
   cairo_surface_t* surface = cairo_get_target(cairo);
   if (surface == NULL) {
-    return false;
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
   int rowstride            = cairo_image_surface_get_stride(surface);
@@ -211,8 +234,8 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
   SpectrePage* ps_page          = (SpectrePage*) page->data;
   SpectreRenderContext* context = spectre_render_context_new();
 
-  double scalex = ((double)page_width) / page->width,
-         scaley = ((double)page_height) / page->height;
+  double scalex = ((double) page_width) / page->width,
+         scaley = ((double) page_height) / page->height;
 
   spectre_render_context_set_scale(context, scalex, scaley);
 
@@ -223,7 +246,7 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
 
   if (page_data == NULL || spectre_page_status(ps_page)) {
     g_free(page_data);
-    return false;
+    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
   for (unsigned int y = 0; y < page_height; y++) {
@@ -239,6 +262,6 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
 
   g_free(page_data);
 
-  return true;
+  return ZATHURA_PLUGIN_ERROR_OK;
 }
 #endif
