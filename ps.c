@@ -192,7 +192,7 @@ ps_page_render(zathura_page_t* page)
 
 #if HAVE_CAIRO
 bool
-ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo)
+ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(printing))
 {
   if (page == NULL || page->data == NULL || cairo == NULL) {
     return false;
