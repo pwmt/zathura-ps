@@ -1,7 +1,7 @@
 # See LICENSE file for license and copyright information
 
 # General information
-PROJECT_NAME          = zathura-pdf-poppler
+PROJECT_NAME          = zathura-ps
 OUTPUT_DIRECTORY      = ./doc/
 OUTPUT_LANGUAGE       = English
 TAB_SIZE              = 2
