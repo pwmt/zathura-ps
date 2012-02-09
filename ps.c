@@ -22,6 +22,7 @@ ps_document_open(zathura_document_t* document)
   zathura_plugin_error_t error = ZATHURA_PLUGIN_ERROR_OK;
 
   if (document == NULL) {
+    error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
     goto error_ret;
   }
 
@@ -34,7 +35,7 @@ ps_document_open(zathura_document_t* document)
   document->functions.page_free                 = ps_page_free;
 
   document->data = malloc(sizeof(ps_document_t));
-  if (document->data) {
+  if (document->data == NULL) {
     error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
     goto error_ret;
   }
