@@ -11,6 +11,30 @@
 
 #include "ps.h"
 
+static const char*
+get_extension(const char* path)
+{
+  if (path == NULL) {
+    return NULL;
+  }
+
+  unsigned int i = strlen(path);
+  for (; i > 0; i--)
+  {
+    if (*(path + i) != '.') {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  if (i == 0) {
+    return NULL;
+  }
+
+  return path + i + 1;
+}
+
 void
 plugin_register(zathura_document_plugin_t* plugin)
 {
@@ -108,7 +132,13 @@ ps_document_save_as(zathura_document_t* document, const char* path)
 
   ps_document_t* ps_document = (ps_document_t*) document->data;
 
-  spectre_document_save(ps_document->document, path);
+  const char* extension = get_extension(path);
+
+  if (extension != NULL && g_strcmp0(extension, "pdf") == 0) {
+    spectre_document_save_to_pdf(ps_document->document, path);
+  } else {
+    spectre_document_save(ps_document->document, path);
+  }
 
   if (spectre_document_status(ps_document->document) != SPECTRE_STATUS_SUCCESS) {
     return ZATHURA_PLUGIN_ERROR_UNKNOWN;
