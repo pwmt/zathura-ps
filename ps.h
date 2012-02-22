@@ -38,6 +38,16 @@ zathura_plugin_error_t ps_document_open(zathura_document_t* document);
 zathura_plugin_error_t ps_document_free(zathura_document_t* document);
 
 /**
+ * Saves the document to the given path
+ *
+ * @param document Zathura document
+ * @param path File path
+ * @return ZATHURA_PLUGIN_ERROR_OK when no error occured, otherwise see
+ *    zathura_plugin_error_t
+ */
+zathura_plugin_error_t ps_document_save_as(zathura_document_t* document, const char* path);
+
+/**
  * Returns a reference to a page
  *
  * @param document Zathura document
