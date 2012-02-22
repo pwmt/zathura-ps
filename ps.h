@@ -48,6 +48,18 @@ zathura_plugin_error_t ps_document_free(zathura_document_t* document);
 zathura_plugin_error_t ps_document_save_as(zathura_document_t* document, const char* path);
 
 /**
+ * Returns the content of a given meta field
+ *
+ * @param document Zathura document
+ * @param meta Meta identifier
+ * @param error Set to an error value (see zathura_plugin_error_t) if an
+ *   error occured
+ * @return Value of the meta data or NULL if an error occurred
+ */
+char* ps_document_meta_get(zathura_document_t* document,
+    zathura_document_meta_t meta, zathura_plugin_error_t* error);
+
+/**
  * Returns a reference to a page
  *
  * @param document Zathura document

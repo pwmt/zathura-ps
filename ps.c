@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <girara/datastructures.h>
+#include <string.h>
 
 #include "ps.h"
 
@@ -30,6 +31,7 @@ ps_document_open(zathura_document_t* document)
   document->functions.page_get                  = ps_page_get;
   document->functions.page_render               = ps_page_render;
   document->functions.document_save_as          = ps_document_save_as;
+  document->functions.document_meta_get         = ps_document_meta_get;
 #if HAVE_CAIRO
   document->functions.page_render_cairo         = ps_page_render_cairo;
 #endif
@@ -107,6 +109,62 @@ ps_document_save_as(zathura_document_t* document, const char* path)
   } else {
     return ZATHURA_PLUGIN_ERROR_OK;
   }
+}
+
+char*
+ps_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta,
+    zathura_plugin_error_t* error)
+{
+  if (document == NULL || document->data == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+    }
+    return NULL;
+  }
+
+  /* get document information */
+  ps_document_t* ps_document = (ps_document_t*) document->data;
+
+  const char* creator = spectre_document_get_creator(ps_document->document);
+  if (creator == NULL) {
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
+    return NULL;
+  }
+
+  /* process value */
+  char* string_value = NULL;
+
+  switch (meta) {
+    case ZATHURA_DOCUMENT_TITLE:
+      string_value = g_strdup(spectre_document_get_title(ps_document->document));
+      break;
+    case ZATHURA_DOCUMENT_AUTHOR:
+      string_value = g_strdup(creator != NULL ? creator :
+          spectre_document_get_for(ps_document->document));
+      break;
+    case ZATHURA_DOCUMENT_CREATION_DATE:
+      string_value =
+        g_strdup(spectre_document_get_creation_date(ps_document->document));
+      break;
+    default:
+      if (error != NULL) {
+        *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+      }
+      return NULL;
+  }
+
+  if (string_value == NULL || strlen(string_value) == 0) {
+    g_free(string_value);
+    if (error != NULL) {
+      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    }
+    return NULL;
+  }
+
+  return string_value;
+
 }
 
 zathura_page_t*
