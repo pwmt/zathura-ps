@@ -19,8 +19,7 @@ get_extension(const char* path)
   }
 
   unsigned int i = strlen(path);
-  for (; i > 0; i--)
-  {
+  for (; i > 0; i--) {
     if (*(path + i) != '.') {
       continue;
     } else {
@@ -304,7 +303,7 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
   spectre_page_render(ps_page, context, &page_data, &row_length);
   spectre_render_context_free(context);
 
-  if (page_data == NULL || spectre_page_status(ps_page)) {
+  if (page_data == NULL || spectre_page_status(ps_page) != SPECTRE_STATUS_SUCCESS) {
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
     }
@@ -358,7 +357,7 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
   spectre_page_render(ps_page, context, &page_data, &row_length);
   spectre_render_context_free(context);
 
-  if (page_data == NULL || spectre_page_status(ps_page)) {
+  if (page_data == NULL || spectre_page_status(ps_page) != SPECTRE_STATUS_SUCCESS) {
     g_free(page_data);
     return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
