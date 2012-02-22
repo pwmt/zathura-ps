@@ -5,6 +5,10 @@
 #include <string.h>
 #include <glib.h>
 
+#if HAVE_CAIRO
+#include <cairo.h>
+#endif
+
 #include "ps.h"
 
 void
@@ -15,7 +19,8 @@ plugin_register(zathura_document_plugin_t* plugin)
   girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/x-eps"));
   girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/eps"));
   girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/x-eps"));
-  plugin->open_function  = ps_document_open;
+
+  plugin->open_function = ps_document_open;
 }
 
 zathura_plugin_error_t
@@ -28,15 +33,15 @@ ps_document_open(zathura_document_t* document)
     goto error_ret;
   }
 
-  document->functions.document_free             = ps_document_free;
-  document->functions.page_get                  = ps_page_get;
-  document->functions.page_render               = ps_page_render;
-  document->functions.document_save_as          = ps_document_save_as;
-  document->functions.document_meta_get         = ps_document_meta_get;
+  document->functions.document_free     = ps_document_free;
+  document->functions.page_get          = ps_page_get;
+  document->functions.page_render       = ps_page_render;
+  document->functions.document_save_as  = ps_document_save_as;
+  document->functions.document_meta_get = ps_document_meta_get;
 #if HAVE_CAIRO
-  document->functions.page_render_cairo         = ps_page_render_cairo;
+  document->functions.page_render_cairo = ps_page_render_cairo;
 #endif
-  document->functions.page_free                 = ps_page_free;
+  document->functions.page_free         = ps_page_free;
 
   document->data = malloc(sizeof(ps_document_t));
   if (document->data == NULL) {
