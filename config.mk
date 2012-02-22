@@ -6,17 +6,18 @@ VERSION = 0.0.1
 PREFIX ?= /usr
 
 # libs
-GTK_INC ?= $(shell pkg-config --cflags gtk+-2.0)
-GTK_LIB ?= $(shell pkg-config --libs gtk+-2.0)
+GLIB_INC ?= $(shell pkg-config --cflags glib-2.0)
+GLIB_LIB ?= $(shell pkg-config --libs glib-2.0)
 
 SPECTRE_INC ?= $(shell pkg-config --cflags libspectre)
 SPECTRE_LIB ?= $(shell pkg-config --libs libspectre)
 
 GIRARA_INC ?= $(shell pkg-config --cflags girara-gtk2)
+GIRARA_LIB ?= $(shell pkg-config --libs girara-gtk2)
 ZATHURA_INC ?= $(shell pkg-config --cflags zathura)
 
-INCS = ${GTK_INC} ${SPECTRE_INC} ${ZATHURA_INC} ${GIRARA_INC}
-LIBS = ${GTK_LIB} ${SPECTRE_LIB}
+INCS = ${GLIB_INC} ${SPECTRE_INC} ${GIRARA_INC} ${ZATHURA_INC}
+LIBS = ${GLIB_LIB} ${SPECTRE_LIB} ${GIRARA_LIB}
 
 # flags
 CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)

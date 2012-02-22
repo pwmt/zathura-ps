@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <girara/datastructures.h>
 #include <string.h>
+#include <glib.h>
 
 #include "ps.h"
 
