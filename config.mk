@@ -6,6 +6,9 @@ VERSION = 0.0.1
 PREFIX ?= /usr
 
 # libs
+CAIRO_INC ?= $(shell pkg-config --cflags cairo)
+CAIRO_LIB ?= $(shell pkg-config --libs cairo)
+
 GLIB_INC ?= $(shell pkg-config --cflags glib-2.0)
 GLIB_LIB ?= $(shell pkg-config --libs glib-2.0)
 
