@@ -169,19 +169,18 @@ ps_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta,
   }
 
   /* process value */
-  char* string_value = NULL;
+  const char* string_value = NULL;
 
   switch (meta) {
     case ZATHURA_DOCUMENT_TITLE:
-      string_value = g_strdup(spectre_document_get_title(ps_document->document));
+      string_value = spectre_document_get_title(ps_document->document);
       break;
     case ZATHURA_DOCUMENT_AUTHOR:
-      string_value = g_strdup(creator != NULL ? creator :
-          spectre_document_get_for(ps_document->document));
+      string_value = (creator != NULL) ? creator :
+        spectre_document_get_for(ps_document->document);
       break;
     case ZATHURA_DOCUMENT_CREATION_DATE:
-      string_value =
-        g_strdup(spectre_document_get_creation_date(ps_document->document));
+      string_value = spectre_document_get_creation_date(ps_document->document);
       break;
     default:
       if (error != NULL) {
@@ -191,15 +190,14 @@ ps_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta,
   }
 
   if (string_value == NULL || strlen(string_value) == 0) {
-    g_free(string_value);
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
     }
+
     return NULL;
   }
 
-  return string_value;
-
+  return g_strdup(string_value);
 }
 
 zathura_page_t*
@@ -275,7 +273,7 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
     }
-    return NULL;
+    goto error_ret;
   }
 
   /* calculate sizes */
@@ -289,7 +287,7 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
     }
-    return NULL;
+    goto error_ret;
   }
 
   SpectrePage* ps_page          = (SpectrePage*) page->data;
@@ -304,11 +302,11 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
   spectre_render_context_free(context);
 
   if (page_data == NULL || spectre_page_status(ps_page) != SPECTRE_STATUS_SUCCESS) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+    if (page_data != NULL) {
+      free(page_data);
     }
-    g_free(page_data);
-    return NULL;
+
+    goto error_ret;
   }
 
   for (unsigned int y = 0; y < page_height; y++) {
@@ -321,9 +319,17 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
     }
   }
 
-  g_free(page_data);
+  free(page_data);
 
   return image_buffer;
+
+error_ret:
+
+  if (error != NULL && *error == ZATHURA_PLUGIN_ERROR_OK) {
+    *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
+  }
+
+  return NULL;
 }
 
 #if HAVE_CAIRO
@@ -358,7 +364,10 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
   spectre_render_context_free(context);
 
   if (page_data == NULL || spectre_page_status(ps_page) != SPECTRE_STATUS_SUCCESS) {
-    g_free(page_data);
+    if (page_data != NULL) {
+      free(page_data);
+    }
+
     return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
@@ -373,7 +382,7 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
     }
   }
 
-  g_free(page_data);
+  free(page_data);
 
   return ZATHURA_PLUGIN_ERROR_OK;
 }

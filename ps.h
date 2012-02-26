@@ -15,7 +15,7 @@
  * PostScript document
  */
 typedef struct ps_document_s
-{ 
+{
   SpectreDocument* document; /**< libspectre document */
 } ps_document_t;
 
