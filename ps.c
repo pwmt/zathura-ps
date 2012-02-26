@@ -293,6 +293,10 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
   SpectrePage* ps_page          = (SpectrePage*) page->data;
   SpectreRenderContext* context = spectre_render_context_new();
 
+  if (context == NULL) {
+    goto error_ret;
+  }
+
   spectre_render_context_set_scale(context, page->document->scale, page->document->scale);
   spectre_render_context_set_rotation(context, 0);
 
@@ -352,6 +356,10 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
 
   SpectrePage* ps_page          = (SpectrePage*) page->data;
   SpectreRenderContext* context = spectre_render_context_new();
+
+  if (context == NULL) {
+    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
+  }
 
   double scalex = ((double) page_width) / page->width,
          scaley = ((double) page_height) / page->height;
