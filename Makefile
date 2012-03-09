@@ -53,7 +53,7 @@ ${PLUGIN}-debug.so: zathura-version-check ${DOBJECTS}
 
 clean:
 	$(QUIET)rm -rf ${OBJECTS} ${DOBJECTS} $(PLUGIN).so doc .depend \
-		${PROJECT}-${VERSION}.tar.gz ${PLUGON}-debug.so
+		${PROJECT}-${VERSION}.tar.gz ${PLUGIN}-debug.so
 
 debug: options ${PLUGIN}-debug.so
 
