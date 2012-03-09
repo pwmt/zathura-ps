@@ -11,40 +11,21 @@
 
 #include "ps.h"
 
-static const char*
-get_extension(const char* path)
-{
-  if (path == NULL) {
-    return NULL;
-  }
+/* forward declaration */
+static const char* get_extension(const char* path);
 
-  unsigned int i = strlen(path);
-  for (; i > 0; i--) {
-    if (*(path + i) != '.') {
-      continue;
-    } else {
-      break;
-    }
-  }
-
-  if (i == 0) {
-    return NULL;
-  }
-
-  return path + i + 1;
-}
-
-void
-plugin_register(zathura_document_plugin_t* plugin)
-{
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/postscript"));
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/eps"));
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("application/x-eps"));
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/eps"));
-  girara_list_append(plugin->content_types, g_content_type_from_mime_type("image/x-eps"));
-
-  plugin->open_function = ps_document_open;
-}
+PLUGIN_REGISTER(
+    "ps",
+    0, 1, 0,
+    ps_document_open,
+    PLUGIN_MIMETYPES({
+      "application/postscript",
+      "application/eps",
+      "application/x-eps",
+      "image/eps",
+      "image/x-eps"
+    })
+  )
 
 zathura_plugin_error_t
 ps_document_open(zathura_document_t* document)
@@ -395,3 +376,26 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
   return ZATHURA_PLUGIN_ERROR_OK;
 }
 #endif
+
+static const char*
+get_extension(const char* path)
+{
+  if (path == NULL) {
+    return NULL;
+  }
+
+  unsigned int i = strlen(path);
+  for (; i > 0; i--) {
+    if (*(path + i) != '.') {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  if (i == 0) {
+    return NULL;
+  }
+
+  return path + i + 1;
+}
