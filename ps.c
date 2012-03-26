@@ -38,14 +38,14 @@ ps_document_open(zathura_document_t* document)
   }
 
   document->functions.document_free     = ps_document_free;
-  document->functions.page_get          = ps_page_get;
+  document->functions.page_init         = ps_page_init;
+  document->functions.page_clear        = ps_page_clear;
   document->functions.page_render       = ps_page_render;
   document->functions.document_save_as  = ps_document_save_as;
   document->functions.document_meta_get = ps_document_meta_get;
 #if HAVE_CAIRO
   document->functions.page_render_cairo = ps_page_render_cairo;
 #endif
-  document->functions.page_free         = ps_page_free;
 
   document->data = malloc(sizeof(ps_document_t));
   if (document->data == NULL) {
@@ -181,68 +181,46 @@ ps_document_meta_get(zathura_document_t* document, zathura_document_meta_t meta,
   return g_strdup(string_value);
 }
 
-zathura_page_t*
-ps_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_error_t* error)
+zathura_plugin_error_t
+ps_page_init(zathura_page_t* page)
 {
+  if (page == NULL) {
+    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+  }
+
+  zathura_document_t* document = zathura_page_get_document(page);
   if (document == NULL || document->data == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
-    }
-    return NULL;
+    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
-  ps_document_t* ps_document    = (ps_document_t*) document->data;
-  zathura_page_t* document_page = malloc(sizeof(zathura_page_t));
-
-  if (document_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_OUT_OF_MEMORY;
-    }
-    goto error_ret;
-  }
-
-  SpectrePage* ps_page = spectre_document_get_page(ps_document->document, page);
-
+  ps_document_t* ps_document = (ps_document_t*) document->data;
+  SpectrePage* ps_page = spectre_document_get_page(ps_document->document, zathura_page_get_index(page));
   if (ps_page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_PLUGIN_ERROR_UNKNOWN;
-    }
-    goto error_free;
+    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
   int page_width;
   int page_height;
   spectre_page_get_size(ps_page, &(page_width), &(page_height));
 
-  document_page->width    = page_width;
-  document_page->height   = page_height;
-  document_page->document = document;
-  document_page->data     = ps_page;
+  zathura_page_set_width(page, page_width);
+  zathura_page_set_height(page, page_height);
+  zathura_page_set_data(page, ps_page);
 
-  return document_page;
-
-error_free:
-
-  free(document_page);
-
-error_ret:
-
-  return NULL;
+  return ZATHURA_PLUGIN_ERROR_OK;
 }
 
 zathura_plugin_error_t
-ps_page_free(zathura_page_t* page)
+ps_page_clear(zathura_page_t* page)
 {
   if (page == NULL) {
     return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
-  if (page->data != NULL) {
-    SpectrePage* ps_page = (SpectrePage*) page->data;
+  SpectrePage* ps_page = (SpectrePage*) zathura_page_get_data(page);
+  if (ps_page != NULL) {
     spectre_page_free(ps_page);
   }
-
-  free(page);
 
   return ZATHURA_PLUGIN_ERROR_OK;
 }
@@ -250,16 +228,23 @@ ps_page_free(zathura_page_t* page)
 zathura_image_buffer_t*
 ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
 {
-  if (page == NULL || page->data == NULL || page->document == NULL) {
+  if (page == NULL) {
     if (error != NULL) {
       *error = ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
     }
     goto error_ret;
   }
 
+  zathura_document_t* document = zathura_page_get_document(page);
+  SpectrePage* ps_page         = (SpectrePage*) zathura_page_get_data(page);
+
+  if (document == NULL || ps_page == NULL) {
+    goto error_ret;
+  }
+
   /* calculate sizes */
-  unsigned int page_width  = page->document->scale * page->width;
-  unsigned int page_height = page->document->scale * page->height;
+  unsigned int page_width  = document->scale * zathura_page_get_width(page);
+  unsigned int page_height = document->scale * zathura_page_get_height(page);
 
   /* create image buffer */
   zathura_image_buffer_t* image_buffer = zathura_image_buffer_create(page_width, page_height);
@@ -271,14 +256,13 @@ ps_page_render(zathura_page_t* page, zathura_plugin_error_t* error)
     goto error_ret;
   }
 
-  SpectrePage* ps_page          = (SpectrePage*) page->data;
   SpectreRenderContext* context = spectre_render_context_new();
 
   if (context == NULL) {
     goto error_ret;
   }
 
-  spectre_render_context_set_scale(context, page->document->scale, page->document->scale);
+  spectre_render_context_set_scale(context, document->scale, document->scale);
   spectre_render_context_set_rotation(context, 0);
 
   unsigned char* page_data;
@@ -321,13 +305,15 @@ error_ret:
 zathura_plugin_error_t
 ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(printing))
 {
-  if (page == NULL || page->data == NULL || cairo == NULL) {
+  if (page == NULL || cairo == NULL) {
     return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
   }
 
+  SpectrePage* ps_page     = (SpectrePage*) zathura_page_get_data(page);;
   cairo_surface_t* surface = cairo_get_target(cairo);
-  if (surface == NULL) {
-    return ZATHURA_PLUGIN_ERROR_INVALID_ARGUMENTS;
+
+  if (ps_page == NULL || surface == NULL) {
+    return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
   int rowstride            = cairo_image_surface_get_stride(surface);
@@ -335,15 +321,14 @@ ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo, bool GIRARA_UNUSED(pr
   unsigned int page_width  = cairo_image_surface_get_width(surface);
   unsigned int page_height = cairo_image_surface_get_height(surface);
 
-  SpectrePage* ps_page          = (SpectrePage*) page->data;
   SpectreRenderContext* context = spectre_render_context_new();
 
   if (context == NULL) {
     return ZATHURA_PLUGIN_ERROR_UNKNOWN;
   }
 
-  double scalex = ((double) page_width) / page->width,
-         scaley = ((double) page_height) / page->height;
+  double scalex = ((double) page_width)  / zathura_page_get_width(page);
+  double scaley = ((double) page_height) / zathura_page_get_height(page);
 
   spectre_render_context_set_scale(context, scalex, scaley);
 

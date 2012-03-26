@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <libspectre/spectre.h>
 #include <zathura/document.h>
+#include <zathura/page.h>
 
 #if HAVE_CAIRO
 #include <cairo.h>
@@ -62,13 +63,11 @@ char* ps_document_meta_get(zathura_document_t* document,
 /**
  * Returns a reference to a page
  *
- * @param document Zathura document
- * @param page Page number
- * @param error Set to an error value (see zathura_plugin_error_t) if an
- *   error occured
- * @return A page object or NULL if an error occurred
+ * @param page Page object
+ * @return ZATHURA_PLUGIN_ERROR_OK if no error occured otherwise see
+ *   zathura_plugin_error_t
  */
-zathura_page_t* ps_page_get(zathura_document_t* document, unsigned int page, zathura_plugin_error_t* error);
+zathura_plugin_error_t ps_page_init(zathura_page_t* page);
 
 /**
  * Renders a page and returns a allocated image buffer which has to be freed
@@ -101,6 +100,6 @@ zathura_plugin_error_t ps_page_render_cairo(zathura_page_t* page, cairo_t* cairo
  * @return ZATHURA_PLUGIN_ERROR_OK if no error occured otherwise see
  *   zathura_plugin_error_t
  */
-zathura_plugin_error_t ps_page_free(zathura_page_t* page);
+zathura_plugin_error_t ps_page_clear(zathura_page_t* page);
 
 #endif // PS_H
