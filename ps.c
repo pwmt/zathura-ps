@@ -17,15 +17,15 @@ static const char* get_extension(const char* path);
 void
 register_functions(zathura_plugin_functions_t* functions)
 {
-  functions->document_open     = ps_document_open;
-  functions->document_free     = ps_document_free;
-  functions->page_init         = ps_page_init;
-  functions->page_clear        = ps_page_clear;
-  functions->page_render       = ps_page_render;
-  functions->document_save_as  = ps_document_save_as;
-  functions->document_meta_get = ps_document_meta_get;
-#if HAVE_CAIRO
-  functions->page_render_cairo = ps_page_render_cairo;
+  functions->document_open            = ps_document_open;
+  functions->document_free            = ps_document_free;
+  functions->page_init                = ps_page_init;
+  functions->page_clear               = ps_page_clear;
+  functions->page_render              = ps_page_render;
+  functions->document_save_as         = ps_document_save_as;
+  functions->document_get_information = ps_document_get_information;
+  #if HAVE_CAIRO
+  functions->page_render_cairo        = ps_page_render_cairo;
 #endif
 }
 
@@ -117,9 +117,9 @@ ps_document_save_as(zathura_document_t* document, SpectreDocument* spectre_docum
   }
 }
 
-char*
-ps_document_meta_get(zathura_document_t* document, SpectreDocument* spectre_document, zathura_document_meta_t meta,
-    zathura_error_t* error)
+girara_list_t*
+ps_document_get_information(zathura_document_t* document, SpectreDocument*
+    spectre_document, zathura_error_t* error)
 {
   if (document == NULL || spectre_document == NULL) {
     if (error != NULL) {
@@ -128,45 +128,31 @@ ps_document_meta_get(zathura_document_t* document, SpectreDocument* spectre_docu
     return NULL;
   }
 
+  girara_list_t* list = zathura_document_information_entry_list_new();
+  if (list == NULL) {
+    return NULL;
+  }
+
   /* get document information */
+  zathura_document_information_entry_t* entry = NULL;
+
   const char* creator = spectre_document_get_creator(spectre_document);
-  if (creator == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
-    return NULL;
-  }
+  entry = zathura_document_information_entry_new(ZATHURA_DOCUMENT_INFORMATION_CREATOR, creator);
+  girara_list_append(list, entry);
 
-  /* process value */
-  const char* string_value = NULL;
+  const char* title = spectre_document_get_title(spectre_document);
+  entry = zathura_document_information_entry_new(ZATHURA_DOCUMENT_INFORMATION_TITLE, title);
+  girara_list_append(list, entry);
 
-  switch (meta) {
-    case ZATHURA_DOCUMENT_TITLE:
-      string_value = spectre_document_get_title(spectre_document);
-      break;
-    case ZATHURA_DOCUMENT_AUTHOR:
-      string_value = (creator != NULL) ? creator :
-        spectre_document_get_for(spectre_document);
-      break;
-    case ZATHURA_DOCUMENT_CREATION_DATE:
-      string_value = spectre_document_get_creation_date(spectre_document);
-      break;
-    default:
-      if (error != NULL) {
-        *error = ZATHURA_ERROR_UNKNOWN;
-      }
-      return NULL;
-  }
+  const char* author = spectre_document_get_for(spectre_document);
+  entry = zathura_document_information_entry_new(ZATHURA_DOCUMENT_INFORMATION_AUTHOR, author);
+  girara_list_append(list, entry);
 
-  if (string_value == NULL || strlen(string_value) == 0) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_UNKNOWN;
-    }
+  const char* creation_date = spectre_document_get_creation_date(spectre_document);
+  entry = zathura_document_information_entry_new(ZATHURA_DOCUMENT_INFORMATION_CREATION_DATE, creation_date);
+  girara_list_append(list, entry);
 
-    return NULL;
-  }
-
-  return g_strdup(string_value);
+  return list;
 }
 
 zathura_error_t
