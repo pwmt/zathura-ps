@@ -234,7 +234,7 @@ ps_page_render(zathura_page_t* page, SpectrePage* spectre_page, zathura_error_t*
   spectre_render_context_set_scale(context, scale, scale);
   spectre_render_context_set_rotation(context, 0);
 
-  unsigned char* page_data;
+  unsigned char* page_data = NULL;
   int row_length;
   spectre_page_render(spectre_page, context, &page_data, &row_length);
   spectre_render_context_free(context);
@@ -301,7 +301,7 @@ ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* c
 
   spectre_render_context_set_scale(context, scalex, scaley);
 
-  unsigned char* page_data;
+  unsigned char* page_data = NULL;
   int row_length;
   spectre_page_render(ps_page, context, &page_data, &row_length);
   spectre_render_context_free(context);
