@@ -2,7 +2,7 @@
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 2
-VERSION_REV = 2
+VERSION_REV = 3
 VERSION = ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REV}
 
 # minimum required zathura version
@@ -38,7 +38,7 @@ INCS = ${GLIB_INC} ${SPECTRE_INC} ${GIRARA_INC} ${ZATHURA_INC}
 LIBS = ${GLIB_LIB} ${SPECTRE_LIB} ${GIRARA_LIB}
 
 # flags
-CFLAGS += -std=c99 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
+CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
 
 # debug
 DFLAGS ?= -g
