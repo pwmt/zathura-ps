@@ -5,8 +5,8 @@ include common.mk
 
 PROJECT  = zathura-ps
 PLUGIN   = ps
-SOURCE   = $(shell find . -iname "*.c")
-HEADER   = $(shell find . -iname "*.h")
+SOURCE   = $(wildcard *.c)
+HEADER   = $(wildcard *.h)
 OBJECTS  = ${SOURCE:.c=.o}
 DOBJECTS = ${SOURCE:.c=.do}
 
