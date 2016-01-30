@@ -15,7 +15,7 @@
  * Open a PostScript document
  *
  * @param document Zathura document
- * @return ZATHURA_ERROR_OK if no error occured otherwise see
+ * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
 zathura_error_t ps_document_open(zathura_document_t* document);
@@ -24,7 +24,7 @@ zathura_error_t ps_document_open(zathura_document_t* document);
  * Closes and frees the internal document structure
  *
  * @param document Zathura document
- * @return ZATHURA_ERROR_OK if no error occured otherwise see
+ * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
 zathura_error_t ps_document_free(zathura_document_t* document, SpectreDocument* spectre_document);
@@ -34,7 +34,7 @@ zathura_error_t ps_document_free(zathura_document_t* document, SpectreDocument* 
  *
  * @param document Zathura document
  * @param path File path
- * @return ZATHURA_ERROR_OK when no error occured, otherwise see
+ * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
 zathura_error_t ps_document_save_as(zathura_document_t* document, SpectreDocument* spectre_document, const char* path);
@@ -44,7 +44,7 @@ zathura_error_t ps_document_save_as(zathura_document_t* document, SpectreDocumen
  *
  * @param document Zathura document
  * @param error Set to an error value (see zathura_error_t) if an
- *   error occured
+ *   error occurred
  * @return List of information entries or NULL if an error occurred
  */
 girara_list_t* ps_document_get_information(zathura_document_t* document, SpectreDocument*
@@ -54,7 +54,7 @@ girara_list_t* ps_document_get_information(zathura_document_t* document, Spectre
  * Returns a reference to a page
  *
  * @param page Page object
- * @return ZATHURA_ERROR_OK if no error occured otherwise see
+ * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
 zathura_error_t ps_page_init(zathura_page_t* page, SpectrePage* spectre_page);
@@ -65,7 +65,7 @@ zathura_error_t ps_page_init(zathura_page_t* page, SpectrePage* spectre_page);
  *
  * @param page Page
  * @param error Set to an error value (see zathura_error_t) if an
- *   error occured
+ *   error occurred
  * @return Image buffer or NULL if an error occurred
  */
 zathura_image_buffer_t* ps_page_render(zathura_page_t* page, SpectrePage* spectre_page, zathura_error_t* error);
@@ -77,7 +77,7 @@ zathura_image_buffer_t* ps_page_render(zathura_page_t* page, SpectrePage* spectr
  * @param page Page
  * @param cairo Cairo object
  * @param printing Set to true if page should be rendered for printing
- * @return ZATHURA_ERROR_OK if no error occured otherwise see
+ * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
 zathura_error_t ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* cairo, bool printing);
@@ -87,7 +87,7 @@ zathura_error_t ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_
  * Frees a PostScript page
  *
  * @param page Page
- * @return ZATHURA_ERROR_OK if no error occured otherwise see
+ * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
 zathura_error_t ps_page_clear(zathura_page_t* page, SpectrePage* spectre_page);
