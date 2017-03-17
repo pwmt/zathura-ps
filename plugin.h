@@ -6,10 +6,7 @@
 #include <stdbool.h>
 #include <libspectre/spectre.h>
 #include <zathura/plugin-api.h>
-
-#if HAVE_CAIRO
 #include <cairo.h>
-#endif
 
 /**
  * Open a PostScript document
@@ -70,7 +67,6 @@ zathura_error_t ps_page_init(zathura_page_t* page, SpectrePage* spectre_page);
  */
 zathura_image_buffer_t* ps_page_render(zathura_page_t* page, SpectrePage* spectre_page, zathura_error_t* error);
 
-#if HAVE_CAIRO
 /**
  * Renders a page onto a cairo object
  *
@@ -81,7 +77,6 @@ zathura_image_buffer_t* ps_page_render(zathura_page_t* page, SpectrePage* spectr
  *   zathura_error_t
  */
 zathura_error_t ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* cairo, bool printing);
-#endif
 
 /**
  * Frees a PostScript page

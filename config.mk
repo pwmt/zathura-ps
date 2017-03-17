@@ -34,8 +34,8 @@ ifeq (,${PLUGINDIR})
 PLUGINDIR = ${LIBDIR}/zathura
 endif
 
-INCS = ${GLIB_INC} ${SPECTRE_INC} ${GIRARA_INC} ${ZATHURA_INC}
-LIBS = ${GLIB_LIB} ${SPECTRE_LIB} ${GIRARA_LIB}
+INCS = ${GLIB_INC} ${SPECTRE_INC} ${GIRARA_INC} ${CAIRO_INC} ${ZATHURA_INC}
+LIBS = ${GLIB_LIB} ${SPECTRE_LIB} ${GIRARA_LIB} ${CAIRO_LIB}
 
 # compiler flags
 CFLAGS += -std=c11 -fPIC -pedantic -Wall -Wno-format-zero-length $(INCS)
@@ -45,9 +45,6 @@ LDFLAGS += -fPIC
 
 # debug
 DFLAGS ?= -g
-
-# build with cairo support?
-WITH_CAIRO ?= 1
 
 # compiler
 CC ?= gcc

@@ -3,9 +3,7 @@
 #include <glib.h>
 #include <stdlib.h>
 
-#if HAVE_CAIRO
 #include <cairo.h>
-#endif
 
 #include "plugin.h"
 
@@ -84,7 +82,6 @@ error_ret:
   return NULL;
 }
 
-#if HAVE_CAIRO
 zathura_error_t
 ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* cairo, bool GIRARA_UNUSED(printing))
 {
@@ -145,4 +142,3 @@ ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* c
 
   return ZATHURA_ERROR_OK;
 }
-#endif

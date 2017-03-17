@@ -12,9 +12,7 @@ register_functions(zathura_plugin_functions_t* functions)
   functions->page_render              = (zathura_plugin_page_render_t) ps_page_render;
   functions->document_save_as         = (zathura_plugin_document_save_as_t) ps_document_save_as;
   functions->document_get_information = (zathura_plugin_document_get_information_t) ps_document_get_information;
-#if HAVE_CAIRO
   functions->page_render_cairo        = (zathura_plugin_page_render_cairo_t) ps_page_render_cairo;
-#endif
 }
 
 ZATHURA_PLUGIN_REGISTER(
