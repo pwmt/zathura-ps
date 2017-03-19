@@ -8,8 +8,9 @@
 #include "plugin.h"
 
 zathura_image_buffer_t*
-ps_page_render(zathura_page_t* page, SpectrePage* spectre_page, zathura_error_t* error)
+ps_page_render(zathura_page_t* page, void* data, zathura_error_t* error)
 {
+  SpectrePage* spectre_page = data;
   if (page == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -83,13 +84,13 @@ error_ret:
 }
 
 zathura_error_t
-ps_page_render_cairo(zathura_page_t* page, SpectrePage* spectre_page, cairo_t* cairo, bool GIRARA_UNUSED(printing))
+ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRARA_UNUSED(printing))
 {
+  SpectrePage* ps_page = data;
   if (page == NULL || cairo == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  SpectrePage* ps_page     = (SpectrePage*) zathura_page_get_data(page);;
   cairo_surface_t* surface = cairo_get_target(cairo);
 
   if (ps_page == NULL || surface == NULL ||
