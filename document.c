@@ -47,8 +47,9 @@ error_ret:
 }
 
 zathura_error_t
-ps_document_free(zathura_document_t* document, SpectreDocument* spectre_document)
+ps_document_free(zathura_document_t* document, void* data)
 {
+  SpectreDocument* spectre_document = data;
   if (document == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
@@ -62,8 +63,9 @@ ps_document_free(zathura_document_t* document, SpectreDocument* spectre_document
 }
 
 zathura_error_t
-ps_document_save_as(zathura_document_t* document, SpectreDocument* spectre_document, const char* path)
+ps_document_save_as(zathura_document_t* document, void* data, const char* path)
 {
+  SpectreDocument* spectre_document = data;
   if (document == NULL || spectre_document == NULL || path == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }

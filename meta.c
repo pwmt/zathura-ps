@@ -3,9 +3,9 @@
 #include "plugin.h"
 
 girara_list_t*
-ps_document_get_information(zathura_document_t* document, SpectreDocument*
-    spectre_document, zathura_error_t* error)
+ps_document_get_information(zathura_document_t* document, void* data, zathura_error_t* error)
 {
+  SpectreDocument* spectre_document = data;
   if (document == NULL || spectre_document == NULL) {
     if (error != NULL) {
       *error = ZATHURA_ERROR_INVALID_ARGUMENTS;

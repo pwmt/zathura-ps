@@ -3,7 +3,7 @@
 #include "plugin.h"
 
 zathura_error_t
-ps_page_init(zathura_page_t* page, SpectrePage* spectre_page)
+ps_page_init(zathura_page_t* page)
 {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -29,12 +29,13 @@ ps_page_init(zathura_page_t* page, SpectrePage* spectre_page)
 }
 
 zathura_error_t
-ps_page_clear(zathura_page_t* page, SpectrePage* spectre_page)
+ps_page_clear(zathura_page_t* page, void* data)
 {
   if (page == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
+  SpectrePage* spectre_page = data;
   if (spectre_page != NULL) {
     spectre_page_free(spectre_page);
   }
