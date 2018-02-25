@@ -11,6 +11,7 @@ cc = meson.get_compiler('c')
 
 datadir = get_option('datadir')
 desktopdir = join_paths(datadir, 'applications')
+metainfodir = join_paths(datadir, 'metainfo')
 
 # required dependencies
 zathura = dependency('zathura', version: '>=0.3.8')
@@ -51,4 +52,4 @@ ps = shared_module('ps',
   install_dir: zathura.get_pkgconfig_variable('plugindir')
 )
 
-install_data('zathura-ps.desktop', install_dir: desktopdir)
+subdir('data')
