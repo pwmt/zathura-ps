@@ -42,11 +42,11 @@ flags = [
 flags = cc.get_supported_arguments(flags)
 
 sources = files(
-  'document.c',
-  'meta.c',
-  'page.c',
-  'plugin.c',
-  'render.c'
+  'zathura-ps/document.c',
+  'zathura-ps/meta.c',
+  'zathura-ps/page.c',
+  'zathura-ps/plugin.c',
+  'zathura-ps/render.c'
 )
 
 ps = shared_module('ps',
