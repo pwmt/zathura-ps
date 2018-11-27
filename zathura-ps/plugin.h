@@ -1,4 +1,4 @@
-/* See LICENSE file for license and copyright information */
+/* SPDX-License-Identifier: Zlib */
 
 #ifndef PS_H
 #define PS_H
