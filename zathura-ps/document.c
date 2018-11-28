@@ -5,9 +5,6 @@
 
 #include "plugin.h"
 
-/* forward declaration */
-static const char* get_extension(const char* path);
-
 zathura_error_t
 ps_document_open(zathura_document_t* document)
 {
@@ -70,9 +67,7 @@ ps_document_save_as(zathura_document_t* document, void* data, const char* path)
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
   }
 
-  const char* extension = get_extension(path);
-
-  if (extension != NULL && g_strcmp0(extension, "pdf") == 0) {
+  if (g_str_has_suffix(path, ".pdf") == true) {
     spectre_document_save_to_pdf(spectre_document, path);
   } else {
     spectre_document_save(spectre_document, path);
@@ -83,27 +78,4 @@ ps_document_save_as(zathura_document_t* document, void* data, const char* path)
   } else {
     return ZATHURA_ERROR_OK;
   }
-}
-
-static const char*
-get_extension(const char* path)
-{
-  if (path == NULL) {
-    return NULL;
-  }
-
-  unsigned int i = strlen(path);
-  for (; i > 0; i--) {
-    if (*(path + i) != '.') {
-      continue;
-    } else {
-      break;
-    }
-  }
-
-  if (i == 0) {
-    return NULL;
-  }
-
-  return path + i + 1;
 }
