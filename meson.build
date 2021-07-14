@@ -1,5 +1,5 @@
 project('zathura-ps', 'c',
-  version: '0.2.6',
+  version: '0.2.7',
   meson_version: '>=0.43',
   default_options: 'c_std=c11'
 )
@@ -21,6 +21,12 @@ cairo = dependency('cairo')
 spectre = dependency('libspectre')
 
 build_dependencies = [zathura, girara, glib, cairo, spectre]
+
+if get_option('plugindir') == ''
+  plugindir = zathura.get_pkgconfig_variable('plugindir')
+else
+  plugindir = get_option('plugindir')
+endif
 
 # defines
 defines = [
@@ -54,7 +60,7 @@ ps = shared_module('ps',
   dependencies: build_dependencies,
   c_args: defines + flags,
   install: true,
-  install_dir: zathura.get_pkgconfig_variable('plugindir')
+  install_dir: plugindir
 )
 
 subdir('data')
