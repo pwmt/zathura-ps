@@ -34,7 +34,8 @@ GIRARA_HIDDEN zathura_error_t ps_document_free(zathura_document_t* document, voi
  * @return ZATHURA_ERROR_OK when no error occurred, otherwise see
  *    zathura_error_t
  */
-GIRARA_HIDDEN zathura_error_t ps_document_save_as(zathura_document_t* document, void* spectre_document, const char* path);
+GIRARA_HIDDEN zathura_error_t ps_document_save_as(zathura_document_t* document, void* spectre_document,
+                                                  const char* path);
 
 /**
  * Returns a list of document information entries of the document
@@ -44,8 +45,8 @@ GIRARA_HIDDEN zathura_error_t ps_document_save_as(zathura_document_t* document, 
  *   error occurred
  * @return List of information entries or NULL if an error occurred
  */
-GIRARA_HIDDEN girara_list_t* ps_document_get_information(zathura_document_t* document, void*
-    spectre_document, zathura_error_t* error);
+GIRARA_HIDDEN girara_list_t* ps_document_get_information(zathura_document_t* document, void* spectre_document,
+                                                         zathura_error_t* error);
 
 /**
  * Returns a reference to a page
@@ -76,7 +77,8 @@ GIRARA_HIDDEN zathura_image_buffer_t* ps_page_render(zathura_page_t* page, void*
  * @return ZATHURA_ERROR_OK if no error occurred otherwise see
  *   zathura_error_t
  */
-GIRARA_HIDDEN zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* spectre_page, cairo_t* cairo, bool printing);
+GIRARA_HIDDEN zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* spectre_page, cairo_t* cairo,
+                                                   bool printing);
 
 /**
  * Frees a PostScript page

@@ -5,9 +5,7 @@
 
 #include "plugin.h"
 
-zathura_error_t
-ps_document_open(zathura_document_t* document)
-{
+zathura_error_t ps_document_open(zathura_document_t* document) {
   zathura_error_t error = ZATHURA_ERROR_OK;
   if (document == NULL) {
     error = ZATHURA_ERROR_UNKNOWN;
@@ -43,9 +41,7 @@ error_ret:
   return error;
 }
 
-zathura_error_t
-ps_document_free(zathura_document_t* document, void* data)
-{
+zathura_error_t ps_document_free(zathura_document_t* document, void* data) {
   SpectreDocument* spectre_document = data;
   if (document == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -59,9 +55,7 @@ ps_document_free(zathura_document_t* document, void* data)
   return ZATHURA_ERROR_OK;
 }
 
-zathura_error_t
-ps_document_save_as(zathura_document_t* document, void* data, const char* path)
-{
+zathura_error_t ps_document_save_as(zathura_document_t* document, void* data, const char* path) {
   SpectreDocument* spectre_document = data;
   if (document == NULL || spectre_document == NULL || path == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
