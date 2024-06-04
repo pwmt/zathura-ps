@@ -124,14 +124,7 @@ zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* 
   }
 
   for (unsigned int y = 0; y < page_height; y++) {
-    for (unsigned int x = 0; x < page_width; x++) {
-      unsigned char* s = page_data + y * row_length + x * 4;
-      guchar* p        = image + y * rowstride + x * 4;
-      p[0]             = s[0];
-      p[1]             = s[1];
-      p[2]             = s[2];
-      p[3]             = s[3];
-    }
+    memcpy(image + y * rowstride, page_data + y * row_length, 4 * page_width);
   }
 
   free(page_data);
