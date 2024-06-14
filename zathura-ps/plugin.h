@@ -58,17 +58,6 @@ GIRARA_HIDDEN girara_list_t* ps_document_get_information(zathura_document_t* doc
 GIRARA_HIDDEN zathura_error_t ps_page_init(zathura_page_t* page);
 
 /**
- * Renders a page and returns a allocated image buffer which has to be freed
- * with zathura_image_buffer_free
- *
- * @param page Page
- * @param error Set to an error value (see zathura_error_t) if an
- *   error occurred
- * @return Image buffer or NULL if an error occurred
- */
-GIRARA_HIDDEN zathura_image_buffer_t* ps_page_render(zathura_page_t* page, void* spectre_page, zathura_error_t* error);
-
-/**
  * Renders a page onto a cairo object
  *
  * @param page Page
