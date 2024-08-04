@@ -7,85 +7,7 @@
 
 #include "plugin.h"
 
-zathura_image_buffer_t*
-ps_page_render(zathura_page_t* page, void* data, zathura_error_t* error)
-{
-  SpectrePage* spectre_page = data;
-  if (page == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_INVALID_ARGUMENTS;
-    }
-    goto error_ret;
-  }
-
-  zathura_document_t* document = zathura_page_get_document(page);
-  if (document == NULL || spectre_page == NULL) {
-    goto error_ret;
-  }
-
-  /* calculate sizes */
-  double scale             = zathura_document_get_scale(document);
-  unsigned int page_width  = scale * zathura_page_get_width(page);
-  unsigned int page_height = scale * zathura_page_get_height(page);
-
-  /* create image buffer */
-  zathura_image_buffer_t* image_buffer = zathura_image_buffer_create(page_width, page_height);
-
-  if (image_buffer == NULL) {
-    if (error != NULL) {
-      *error = ZATHURA_ERROR_OUT_OF_MEMORY;
-    }
-    goto error_ret;
-  }
-
-  SpectreRenderContext* context = spectre_render_context_new();
-
-  if (context == NULL) {
-    goto error_ret;
-  }
-
-  spectre_render_context_set_scale(context, scale, scale);
-  spectre_render_context_set_rotation(context, 0);
-
-  unsigned char* page_data = NULL;
-  int row_length;
-  spectre_page_render(spectre_page, context, &page_data, &row_length);
-  spectre_render_context_free(context);
-
-  if (page_data == NULL || spectre_page_status(spectre_page) != SPECTRE_STATUS_SUCCESS) {
-    if (page_data != NULL) {
-      free(page_data);
-    }
-
-    goto error_ret;
-  }
-
-  for (unsigned int y = 0; y < page_height; y++) {
-    for (unsigned int x = 0; x < page_width; x++) {
-      unsigned char *s = page_data + y * row_length + x * 4;
-      guchar* p = image_buffer->data + y * image_buffer->rowstride + x * 3;
-      p[0] = s[0];
-      p[1] = s[1];
-      p[2] = s[2];
-    }
-  }
-
-  free(page_data);
-
-  return image_buffer;
-
-error_ret:
-
-  if (error != NULL && *error == ZATHURA_ERROR_OK) {
-    *error = ZATHURA_ERROR_UNKNOWN;
-  }
-
-  return NULL;
-}
-
-zathura_error_t
-ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRARA_UNUSED(printing))
-{
+zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRARA_UNUSED(printing)) {
   SpectrePage* ps_page = data;
   if (page == NULL || cairo == NULL) {
     return ZATHURA_ERROR_INVALID_ARGUMENTS;
@@ -93,8 +15,7 @@ ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRA
 
   cairo_surface_t* surface = cairo_get_target(cairo);
 
-  if (ps_page == NULL || surface == NULL ||
-      cairo_surface_status(surface) != CAIRO_STATUS_SUCCESS ||
+  if (ps_page == NULL || surface == NULL || cairo_surface_status(surface) != CAIRO_STATUS_SUCCESS ||
       cairo_surface_get_type(surface) != CAIRO_SURFACE_TYPE_IMAGE) {
     return ZATHURA_ERROR_UNKNOWN;
   }
@@ -110,8 +31,8 @@ ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRA
     return ZATHURA_ERROR_UNKNOWN;
   }
 
-  double scalex = ((double) page_width)  / zathura_page_get_width(page);
-  double scaley = ((double) page_height) / zathura_page_get_height(page);
+  double scalex = ((double)page_width) / zathura_page_get_width(page);
+  double scaley = ((double)page_height) / zathura_page_get_height(page);
 
   spectre_render_context_set_scale(context, scalex, scaley);
 
@@ -129,14 +50,7 @@ ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* cairo, bool GIRA
   }
 
   for (unsigned int y = 0; y < page_height; y++) {
-    for (unsigned int x = 0; x < page_width; x++) {
-      unsigned char *s = page_data + y * row_length + x * 4;
-      guchar* p = image + y * rowstride + x * 4;
-      p[0] = s[0];
-      p[1] = s[1];
-      p[2] = s[2];
-      p[3] = s[3];
-    }
+    memcpy(image + y * rowstride, page_data + y * row_length, 4 * page_width);
   }
 
   free(page_data);

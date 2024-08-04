@@ -1,7 +1,7 @@
 project('zathura-ps', 'c',
-  version: '0.2.7',
-  meson_version: '>=0.43',
-  default_options: 'c_std=c11'
+  version: '0.2.8',
+  meson_version: '>=0.61',
+  default_options: ['c_std=c17', 'warning_level=3']
 )
 
 version = meson.project_version()
@@ -23,7 +23,7 @@ spectre = dependency('libspectre')
 build_dependencies = [zathura, girara, glib, cairo, spectre]
 
 if get_option('plugindir') == ''
-  plugindir = zathura.get_pkgconfig_variable('plugindir')
+  plugindir = zathura.get_variable(pkgconfig: 'plugindir')
 else
   plugindir = get_option('plugindir')
 endif
