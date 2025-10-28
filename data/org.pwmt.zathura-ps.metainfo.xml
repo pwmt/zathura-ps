@@ -16,6 +16,7 @@
   <url type="contact">https://pwmt.org/contact</url>
   <url type="vcs-browser">https://github.com/pwmt/zathura-ps</url>
   <releases>
+    <release version="0.2.9" date="2025-10-28" />
     <release version="0.2.8" date="2024-08-04" />
   </releases>
 </component>
