@@ -4,9 +4,19 @@
   <id>org.pwmt.zathura-ps</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Zlib</project_license>
+  <developer id="org.pwmt">
+    <name>pwmt</name>
+  </developer>
   <extends>org.pwmt.zathura</extends>
   <name>Zathura-PS</name>
   <summary>PostScript plugin for zathura</summary>
-  <url type="homepage">https://pwmt.org/projects/zathur-ps/</url>
-  <update_contact>zathura@lists.pwmt.org</update_contact>
+  <url type="homepage">https://pwmt.org/projects/zathura-ps/</url>
+  <url type="bugtracker">https://github.com/pwmt/zathura-ps/issues</url>
+  <url type="donation">https://pwmt.org/help/donate</url>
+  <url type="contact">https://pwmt.org/contact</url>
+  <url type="vcs-browser">https://github.com/pwmt/zathura-ps</url>
+  <releases>
+    <release version="0.2.9" date="2025-10-28" />
+    <release version="0.2.8" date="2024-08-04" />
+  </releases>
 </component>
