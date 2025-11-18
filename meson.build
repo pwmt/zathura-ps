@@ -38,12 +38,10 @@ defines = [
 
 # compile flags
 flags = [
-  '-Wall',
-  '-Wextra',
-  '-pedantic',
   '-Werror=implicit-function-declaration',
   '-Werror=vla',
-  '-fvisibility=hidden'
+  '-Werror=int-conversion',
+  '-Werror=maybe-unintialized'
 ]
 flags = cc.get_supported_arguments(flags)
 
@@ -60,7 +58,8 @@ ps = shared_module('ps',
   dependencies: build_dependencies,
   c_args: defines + flags,
   install: true,
-  install_dir: plugindir
+  install_dir: plugindir,
+  gnu_symbol_visibility: 'hidden'
 )
 
 subdir('data')
