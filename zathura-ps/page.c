@@ -17,7 +17,7 @@ zathura_error_t ps_page_init(zathura_page_t* page) {
 
   int page_width;
   int page_height;
-  spectre_page_get_size(ps_page, &(page_width), &(page_height));
+  spectre_page_get_size(ps_page, &page_width, &page_height);
 
   zathura_page_set_width(page, page_width);
   zathura_page_set_height(page, page_height);
