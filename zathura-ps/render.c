@@ -42,10 +42,7 @@ zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* 
   spectre_render_context_free(context);
 
   if (page_data == NULL || spectre_page_status(ps_page) != SPECTRE_STATUS_SUCCESS) {
-    if (page_data != NULL) {
-      free(page_data);
-    }
-
+    free(page_data);
     return ZATHURA_ERROR_UNKNOWN;
   }
 
@@ -54,6 +51,5 @@ zathura_error_t ps_page_render_cairo(zathura_page_t* page, void* data, cairo_t* 
   }
 
   free(page_data);
-
   return ZATHURA_ERROR_OK;
 }
