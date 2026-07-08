@@ -2,7 +2,7 @@
 
 #include "plugin.h"
 
-ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS("ps", VERSION_MAJOR, VERSION_MINOR, VERSION_REV,
+ZATHURA_PLUGIN_REGISTER_WITH_FUNCTIONS("ps", VERSION,
                                        ZATHURA_PLUGIN_FUNCTIONS({
                                            .document_open            = ps_document_open,
                                            .document_free            = ps_document_free,
